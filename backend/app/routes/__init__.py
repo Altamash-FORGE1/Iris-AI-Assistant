@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify
 
+from .auth import auth_bp
+
 health_bp = Blueprint('health', __name__, url_prefix='/api/v1/health')
 
 @health_bp.route('/', methods=['GET'])

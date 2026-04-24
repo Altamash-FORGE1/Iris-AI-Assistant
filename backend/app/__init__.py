@@ -36,7 +36,8 @@ def create_app():
     CORS(app)
 
     # Register blueprints
-    from app.routes import health_bp
+    from app.routes import health_bp, auth_bp
     app.register_blueprint(health_bp)
+    app.register_blueprint(auth_bp)
 
     return app
