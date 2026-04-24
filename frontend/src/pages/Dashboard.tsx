@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 interface Message {
@@ -10,6 +11,7 @@ interface Message {
 
 export default function Dashboard() {
   const { user, logout, api } = useAuth()
+  const navigate = useNavigate()
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -34,7 +36,7 @@ export default function Dashboard() {
     setIsLoading(true)
 
     try {
-      const response = await api.post('/api/chat', { message: input })
+      const response = await api.post('/chat', { message: input })
       const irisMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: response.data.response,
@@ -75,7 +77,12 @@ export default function Dashboard() {
           </div>
           <button
             type="button"
-            onClick={logout}
+            onClick={() => {
+              logout()
+              localStorage.removeItem('iris_token')
+              localStorage.removeItem('iris_user')
+              navigate('/login')
+            }}
             className="rounded-full bg-emerald-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-600"
           >
             Log out

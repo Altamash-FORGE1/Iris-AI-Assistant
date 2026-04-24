@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from 'react'
+import axios from 'axios'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -16,11 +17,14 @@ export default function Signup() {
     setError('')
 
     try {
-      const response = await api.post('/api/auth/signup', { username, email, password })
+      const response = await api.post('/auth/signup', { username, email, password })
       login(response.data.token, response.data.user)
       navigate('/dashboard')
     } catch (err) {
-      setError('Signup failed. Please verify your details and try again.')
+      const responseData = axios.isAxiosError(err) ? err.response?.data : null
+      setError(
+        responseData?.message ?? responseData?.error ?? 'Signup failed. Please verify your details and try again.',
+      )
     }
   }
 
@@ -44,6 +48,7 @@ export default function Signup() {
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               placeholder="yourname"
+              autoComplete="off"
               className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm outline-none transition focus:border-teal-400 focus:ring-2 focus:ring-teal-200"
             />
           </div>
@@ -55,6 +60,7 @@ export default function Signup() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="name@example.com"
+              autoComplete="email"
               className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm outline-none transition focus:border-teal-400 focus:ring-2 focus:ring-teal-200"
             />
           </div>
@@ -66,6 +72,7 @@ export default function Signup() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="At least 8 characters"
+              autoComplete="new-password"
               className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm outline-none transition focus:border-teal-400 focus:ring-2 focus:ring-teal-200"
             />
           </div>

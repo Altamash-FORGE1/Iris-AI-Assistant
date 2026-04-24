@@ -17,7 +17,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const baseURL = window.location.origin.replace('5173', '5000');
+const baseURL = import.meta.env.VITE_API_URL ?? '/api'
 
 const api = axios.create({
   baseURL,
@@ -57,6 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setToken(null)
     setUser(null)
+    localStorage.removeItem('iris_token')
+    localStorage.removeItem('iris_user')
   }
 
   const value = useMemo(

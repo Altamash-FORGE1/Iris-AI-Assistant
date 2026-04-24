@@ -1,26 +1,56 @@
-import { type FormEvent, useState } from 'react'
+import { useState } from 'react'
+import axios from 'axios'
 import { motion } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { GoogleLogin, type CredentialResponse } from '@react-oauth/google'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const { login, api } = useAuth()
+  const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     setError('')
+    const credential = credentialResponse?.credential
+    if (!credential) {
+      setError('Google login failed. Please try again.')
+      return
+    }
 
     try {
-      const response = await api.post('/api/auth/login', { email, password })
-      login(response.data.token, response.data.user)
+      const response = await axios.post(
+        'https://expert-chainsaw-5vq4745vq5vxfv57q-5000.app.github.dev/api/auth/google',
+        { credential },
+        { withCredentials: true }
+      )
+
+      const token = response.data.token
+      const user = response.data.user
+
+      if (token) {
+        localStorage.setItem('iris_token', token)
+      }
+      if (user) {
+        localStorage.setItem('iris_user', JSON.stringify(user))
+      }
+
+      login(token, user)
       navigate('/dashboard')
     } catch (err) {
-      setError('Login failed. Please check your credentials.')
+      console.log('Google login error:', err)
+      const responseData = axios.isAxiosError(err) ? err.response?.data : null
+      if (axios.isAxiosError(err) && err.response) {
+        console.log('Backend response:', err.response.status, err.response.data)
+      }
+      setError(
+        responseData?.message ?? responseData?.error ?? 'Google login failed. Please try again.',
+      )
     }
+  }
+
+  const handleGoogleError = () => {
+    setError('Google login failed. Please try again.')
   }
 
   return (
@@ -33,47 +63,13 @@ export default function Login() {
       >
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-semibold text-slate-800">Welcome back</h1>
-          <p className="mt-2 text-slate-600">Sign in to continue to Iris AI Assistant.</p>
+          <p className="mt-2 text-slate-600">Sign in with Google to continue to Iris AI Assistant.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Email</label>
-            <input
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="name@example.com"
-              className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="••••••••"
-              className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
-            />
-          </div>
-
+        <div className="space-y-5">
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
-
-          <button
-            type="submit"
-            className="w-full rounded-3xl bg-gradient-to-r from-emerald-500 to-teal-400 px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-teal-500/20 transition hover:opacity-95"
-          >
-            Sign in
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-slate-600">
-          New to Iris?{' '}
-          <Link to="/signup" className="font-semibold text-emerald-600 hover:text-emerald-700">
-            Create an account
-          </Link>
-        </p>
+          <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
+        </div>
       </motion.div>
     </div>
   )
