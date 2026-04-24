@@ -17,8 +17,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+const baseURL = window.location.origin.replace('5173', '5000');
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:5000',
+  baseURL,
   headers: { 'Content-Type': 'application/json' },
 })
 

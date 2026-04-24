@@ -33,11 +33,12 @@ def create_app():
     from app.models import User, VisionProfile, IrisScan  # noqa: F401
 
     # Enable CORS
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
     # Register blueprints
-    from app.routes import health_bp, auth_bp
+    from app.routes import health_bp, auth_bp, chat_bp
     app.register_blueprint(health_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(chat_bp)
 
     return app

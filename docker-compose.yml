@@ -1,7 +1,7 @@
 services:
-  postgres:
+  db:
     image: postgres:15-alpine
-    container_name: iris_postgres
+    container_name: iris_db
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-iris_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-iris_password}
@@ -24,14 +24,15 @@ services:
       dockerfile: Dockerfile
     container_name: iris_backend
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
     environment:
       FLASK_ENV: ${FLASK_ENV:-development}
       FLASK_APP: wsgi.py
-      DATABASE_URL: postgresql://${POSTGRES_USER:-iris_user}:${POSTGRES_PASSWORD:-iris_password}@postgres:5432/${POSTGRES_DB:-iris_db}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-iris_user}:${POSTGRES_PASSWORD:-iris_password}@db:5432/${POSTGRES_DB:-iris_db}
       JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
       REDIS_URL: ${REDIS_URL:-redis://localhost:6379}
+      GROQ_API_KEY: ${GROQ_API_KEY}
     ports:
       - "5000:5000"
     volumes:

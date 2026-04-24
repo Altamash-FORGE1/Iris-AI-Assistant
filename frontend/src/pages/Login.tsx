@@ -32,7 +32,7 @@ export default function Login() {
         className="w-full max-w-md rounded-[32px] border border-white/40 bg-white/70 p-8 shadow-[0_30px_80px_rgba(16,185,129,0.12)] backdrop-blur-xl"
       >
         <div className="mb-6 text-center">
-          <h1 className="text-3xl font-semibold text-slate-900">Welcome back</h1>
+          <h1 className="text-3xl font-semibold text-slate-800">Welcome back</h1>
           <p className="mt-2 text-slate-600">Sign in to continue to Iris AI Assistant.</p>
         </div>
 
@@ -43,7 +43,7 @@ export default function Login() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="name@example.com"
-              className="w-full rounded-3xl border border-white/70 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+              className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
             />
           </div>
 
@@ -54,7 +54,7 @@ export default function Login() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="••••••••"
-              className="w-full rounded-3xl border border-white/70 bg-white/80 px-4 py-3 text-slate-900 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
+              className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder-slate-400 shadow-sm outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200"
             />
           </div>
 
